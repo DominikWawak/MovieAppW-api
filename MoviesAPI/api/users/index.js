@@ -85,7 +85,7 @@ router.post('/:userName/favourites', asyncHandler(async (req, res) => {
     //console.log(tempFav)
     //await user.favourites=Set(tempFav)
     
-    if(await user.favourites.includes(movie.id)){
+    if(!(await user.favourites.includes(movie.id))){
         await user.favourites.push(movie._id);
     }
     await user.save(); 
