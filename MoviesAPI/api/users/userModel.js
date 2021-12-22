@@ -8,11 +8,16 @@ const Schema = mongoose.Schema;
   const UserSchema = new Schema({
     username: { type: String, unique: true, required: true},
     password: {type: String, required: true },
-    favourites: [{type: mongoose.Schema.Types.ObjectId, ref: 'Movies'}]
+    favourites: [{type: mongoose.Schema.Types.ObjectId, ref: 'Movies'}],
+    friends:[{type: mongoose.Schema.Types.ObjectId, ref: 'User'}]
   });
 
   UserSchema.statics.findByUserName = function (username) {
     return this.findOne({ username: username });
+  };
+
+  UserSchema.statics.findByUserId = function (id) {
+    return this.findOne({ _id: id });
   };
   
   UserSchema.methods.comparePassword = function (passw, callback) {

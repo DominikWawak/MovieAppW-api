@@ -99,4 +99,27 @@ router.post('/:userName/favourites', asyncHandler(async (req, res) => {
   }));
 
 
+  router.post('/:userName/friends', asyncHandler(async (req, res) => {
+    const newFriend = req.body.id;
+    const userName = req.params.userName;
+    const friend = await User.findByUserId(newFriend);
+    const user = await User.findByUserName(userName);
+    //tempFav = awaituser.favourites
+    //console.log(tempFav)
+    //await user.favourites=Set(tempFav)
+    
+    if(!(await user.friends.includes(friend._id))){
+        await user.friends.push(friend._id);
+    }
+    await user.save(); 
+    res.status(201).json(user); 
+  }));
+
+  router.get('/:userName/friends', asyncHandler( async (req, res) => {
+    const userName = req.params.userName;
+    const user = await User.findByUserName(userName).populate('friends');
+    res.status(201).json(user.friends);
+  }));
+
+
 export default router;

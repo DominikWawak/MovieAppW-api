@@ -45,6 +45,7 @@ router.post('/', asyncHandler( async(req, res) => {
     // }
     req.body.created_at = new Date();
     req.body.updated_at = new Date();
+    req.body.likes = 0;
     req.body.id = uniqid();
     
     await Review.create(req.body)
@@ -58,6 +59,20 @@ router.post('/', asyncHandler( async(req, res) => {
 
 }));
 
+
+//Update revie ie add likes
+
+router.put('/:id', async (req, res) => {
+    if (req.body._id) delete req.body._id;
+    const result = await Review.updateOne({
+        id: req.params.id,
+    }, req.body);
+    if (result.matchedCount) {
+        res.status(200).json({ code:200, msg: 'review Updated Sucessfully' });
+    } else {
+        res.status(404).json({ code: 404, msg: 'Unable to Update review' });
+    }
+});
 
 
 export default router;
