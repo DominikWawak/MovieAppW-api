@@ -5,6 +5,7 @@ import moviesRouter from './api/movies';
 import './db'
 import './seedData'
 import usersRouter from './api/users';
+import reviewsRouter from './api/reviews'
 import session from 'express-session';
 import authenticate from './authenticate';
 import passport from './authenticate';
@@ -28,6 +29,7 @@ app.use(bodyParser.urlencoded());
 app.use('/api/movies', passport.authenticate('jwt', {session: false}), moviesRouter)
 app.use('/api/genres', genresRouter);
 app.use('/api/users', usersRouter);
+app.use('/api/reviews',reviewsRouter)
 app.use(errHandler);
 // Start server
 app.listen(port, () => {
