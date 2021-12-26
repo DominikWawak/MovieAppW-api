@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import express from 'express';
+import helmet from 'helmet';
 import bodyParser from 'body-parser';
 import moviesRouter from './api/movies';
 import './db'
@@ -20,6 +21,10 @@ const errHandler = (err, req, res, next) => {
 import genresRouter from './api/genres'
 dotenv.config();
 const app = express();
+
+// use helmet 
+
+app.use(helmet())
 const port = process.env.PORT;
 // Add middleware
 app.use(express.json());

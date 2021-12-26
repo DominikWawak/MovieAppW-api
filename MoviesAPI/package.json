@@ -14,13 +14,15 @@
     "express": "^4.17.1",
     "express-async-handler": "^1.2.0",
     "express-session": "^1.17.2",
+    "helmet": "^4.6.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.0.13",
     "node-fetch": "^2.6.6",
     "passport": "^0.5.0",
     "passport-jwt": "^4.0.0",
     "uniqid": "^5.4.0",
-    "unqid": "^1.0.1"
+    "unqid": "^1.0.1",
+    "validator": "^13.7.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

@@ -5,7 +5,7 @@ const router = express.Router(); // eslint-disable-line
 import jwt from 'jsonwebtoken';
 import movieModel from '../movies/movieModel';
 import { set } from 'mongoose';
-
+import validator from 'validator';
 
 // Get all users
 router.get('/', async (req, res) => {
@@ -42,10 +42,10 @@ router.post('/',asyncHandler( async (req, res, next) => {
       res.status(401).json({success: false, msg: 'Please pass username and password.'});
     }
     if (req.query.action === 'register') {
-        if(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{5,}$/.test(req.body.password)){
+        if((/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{5,}$/.test(req.body.password)) && validator.isEmail(req.body.username)){
             await User.create(req.body).catch(next);}
         else{
-            res.status(401).json({code: 401,msg: 'Authentication failed. Password to weak'});
+            res.status(401).json({code: 401,msg: 'Authentication failed. Password to weak or not a valid email'});
         }
       res.status(201).json({code: 201, msg: 'Successful created new user.'     });
     } else {
