@@ -4,7 +4,7 @@ import asyncHandler from 'express-async-handler';
 const router = express.Router(); // eslint-disable-line
 import jwt from 'jsonwebtoken';
 import movieModel from '../movies/movieModel';
-import { set } from 'mongoose';
+import { mongo, Mongoose, set, Types } from 'mongoose';
 import validator from 'validator';
 
 // Get all users
@@ -98,6 +98,26 @@ router.post('/:userName/favourites', asyncHandler(async (req, res) => {
     res.status(201).json(user.favourites);
   }));
 
+  //Delete
+  router.delete('/:userName/favourites/:id', asyncHandler(async (req, res) => {
+    
+    const userName = req.params.userName;
+    const id = req.params.id;
+    
+    const user = await User.findByUserName(userName);
+    //tempFav = awaituser.favourites
+    //console.log(tempFav)
+    //await user.favourites=Set(tempFav)
+    
+    User.findOneAndUpdate({_id:user._id},{
+      $pullAll:{favourites:[Types.ObjectId(id)]}},
+      {new:true},
+      function(err, data) {} 
+    )
+  
+    await user.save(); 
+    res.status(201).json(user); 
+  }));
 
   router.post('/:userName/friends', asyncHandler(async (req, res) => {
     const newFriend = req.body.id;
