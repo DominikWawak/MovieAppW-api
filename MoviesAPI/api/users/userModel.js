@@ -9,6 +9,7 @@ const Schema = mongoose.Schema;
     username: { type: String, unique: true, required: true},
     password: {type: String, required: true },
     favourites: [{type: mongoose.Schema.Types.ObjectId, ref: 'Movies'}],
+    watchlist: [{type: mongoose.Schema.Types.ObjectId, ref: 'Movies'}],
     friends:[{type: mongoose.Schema.Types.ObjectId, ref: 'User'}]
   });
 

@@ -85,7 +85,7 @@ router.post('/:userName/favourites', asyncHandler(async (req, res) => {
     //console.log(tempFav)
     //await user.favourites=Set(tempFav)
     
-    if(!(await user.favourites.includes(movie.id))){
+    if(!(await user.favourites.includes(movie._id))){
         await user.favourites.push(movie._id);
     }
     await user.save(); 
@@ -105,20 +105,43 @@ router.post('/:userName/favourites', asyncHandler(async (req, res) => {
     const id = req.params.id;
     
     const user = await User.findByUserName(userName);
-    //tempFav = awaituser.favourites
-    //console.log(tempFav)
-    //await user.favourites=Set(tempFav)
-    
+    const movie = await movieModel.findByMovieDBId(id);
+   
     User.findOneAndUpdate({_id:user._id},{
-      $pullAll:{favourites:[Types.ObjectId(id)]}},
+      $pullAll:{favourites:[Types.ObjectId(movie._id)]}},
       {new:true},
       function(err, data) {} 
+
     )
+
+    
   
     await user.save(); 
     res.status(201).json(user); 
   }));
 
+
+  router.post('/:userName/watchlist', asyncHandler(async (req, res) => {
+    const newMovie = req.body.id;
+    const userName = req.params.userName;
+    const movie = await movieModel.findByMovieDBId(newMovie);
+    const user = await User.findByUserName(userName);
+    //tempFav = awaituser.favourites
+    //console.log(tempFav)
+    //await user.favourites=Set(tempFav)
+    
+    if(!(await user.watchlist.includes(movie.id))){
+        await user.watchlist.push(movie._id);
+    }
+    await user.save(); 
+    res.status(201).json(user); 
+  }));
+
+  router.get('/:userName/watchlist', asyncHandler( async (req, res) => {
+    const userName = req.params.userName;
+    const user = await User.findByUserName(userName).populate('watchlist');
+    res.status(201).json(user.favourites);
+  }));
   router.post('/:userName/friends', asyncHandler(async (req, res) => {
     const newFriend = req.body.id;
     const userName = req.params.userName;
