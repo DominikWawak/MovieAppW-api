@@ -26,6 +26,27 @@ router.get('/', async (req, res) => {
     // }
 });
 
+// get reviews for a user
+router.get('/:username', async (req, res) => {
+    const username= req.params.username;
+    const reviews = await Review.findByUserName(username)
+    if (reviews) {
+        res.status(200).json(reviews);
+    } else {
+        res.status(404).json({message: 'The resource you requested could not be found.', status_code: 404});
+    }
+    
+    // find reviews in list
+
+    // try  {
+    //     res.status(200).json(movieReviews);
+    // } exept{
+    //     res.status(404).json({
+    //         message: 'The resource you requested could not be found.',
+    //         status_code: 404
+    //     });
+    // }
+});
 
 //Post a movie review
 router.post('/', asyncHandler( async(req, res) => {

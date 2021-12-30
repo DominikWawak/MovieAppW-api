@@ -6,9 +6,23 @@ import jwt from 'jsonwebtoken';
 import movieModel from '../movies/movieModel';
 import { mongo, Mongoose, set, Types } from 'mongoose';
 import validator from 'validator';
+import morgan from 'morgan';
 
-// Get all users
-
+/**
+ * @swagger 
+ * definitions:
+ *  user:
+ *   type: object
+ *   properties:
+ *    username:
+ *     type: string
+ *     description: name of the user
+ *     example: 'abc123@gmail.com'
+ *    password:
+ *     type: string
+ *     description: password
+ *     example: 'Secure123'
+ */
  /**
    * @swagger
    * /api/users:
@@ -16,7 +30,7 @@ import validator from 'validator';
    *   description: get all the users
    *   responses:
    *     '200':
-   *       description:all the users returned
+   *       description: all the users returned
    *  
    * 
    * 
@@ -50,6 +64,23 @@ router.get('/', async (req, res) => {
 //     }
 // }));
 // Register OR authenticate a user
+
+/**
+ * @swagger
+ * /api/users/?action=register:
+ *  post:
+ *   summary: add/register a users
+ *   description: create or log in
+ *   requestBody:
+ *    content:
+ *     application/json:
+ *      schema:
+ *       $ref: '#/definitions'
+ *   responses:
+ *    200:
+ *     description: created sucessfully
+ *    
+ */
 router.post('/',asyncHandler( async (req, res, next) => {
     if (!req.body.username || !req.body.password) {
       res.status(401).json({success: false, msg: 'Please pass username and password.'});
@@ -105,6 +136,25 @@ router.post('/:userName/favourites', asyncHandler(async (req, res) => {
     res.status(201).json(user); 
   }));
 
+
+  /**
+   * @swagger
+   * /api/{username}/favourite:
+   *  post:
+   *   summary: add a movie to favourites
+   *   
+   *   requestBody:
+   *    required: true
+   *    content:
+   *      application/json:
+   * 
+   *   responses:
+   *     '200':
+   *       description: Favourite added
+   *  
+   * 
+   * 
+   */
   router.get('/:userName/favourites', asyncHandler( async (req, res) => {
     const userName = req.params.userName;
     const user = await User.findByUserName(userName).populate('favourites');
@@ -116,12 +166,12 @@ router.post('/:userName/favourites', asyncHandler(async (req, res) => {
   //
   /**
    * @swagger
-   * / api/users:
-   * get:
-   *  description: delete a favourited movie
-   *  response:
-   *  '200':
-   *    description: deleted sucessfully
+   * /{userName}/favourites/{id}:
+   *  delete:
+   *   description: delete a favourited movie
+   *   response:
+   *   '200':
+   *     description: deleted sucessfully
    * 
    */
   router.delete('/:userName/favourites/:id', asyncHandler(async (req, res) => {
@@ -145,7 +195,6 @@ router.post('/:userName/favourites', asyncHandler(async (req, res) => {
     res.status(201).json(user); 
   }));
 
-
   router.post('/:userName/watchlist', asyncHandler(async (req, res) => {
     const newMovie = req.body.id;
     const userName = req.params.userName;
@@ -155,7 +204,7 @@ router.post('/:userName/favourites', asyncHandler(async (req, res) => {
     //console.log(tempFav)
     //await user.favourites=Set(tempFav)
     
-    if(!(await user.watchlist.includes(movie.id))){
+    if(!(await user.watchlist.includes(movie._id))){
         await user.watchlist.push(movie._id);
     }
     await user.save(); 
@@ -165,7 +214,7 @@ router.post('/:userName/favourites', asyncHandler(async (req, res) => {
   router.get('/:userName/watchlist', asyncHandler( async (req, res) => {
     const userName = req.params.userName;
     const user = await User.findByUserName(userName).populate('watchlist');
-    res.status(201).json(user.favourites);
+    res.status(201).json(user.watchlist);
   }));
   router.post('/:userName/friends', asyncHandler(async (req, res) => {
     const newFriend = req.body.id;

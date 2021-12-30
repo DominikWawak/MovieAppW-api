@@ -35,8 +35,10 @@ morgan((tokens, req, res) => {
     tokens.method(req, res),
     tokens.url(req, res),
     tokens.status(req, res),
+   
   ].join(' ')
 })
+
 
 const swaggerOptions={
   swaggerDefinition:{
@@ -49,53 +51,30 @@ const swaggerOptions={
       servers:["http://localhost:8080"]
     }
   },
-  apis:['index.js']
+  apis:['index.js','../MoviesAPI/api/users/index.js','../MoviesAPI/api/movies/index.js','../MoviesAPI/api/reviews/index.js']
 };
 const swaggerDocs = swaggerJSDoc(swaggerOptions)
 
 app.use("/api-docs",swaggerUi.serve,swaggerUi.setup(swaggerDocs))
+
+// swagger schema swagger definition
+
+
 // use helmet 
 
-app.use(helmet())
+
 const port = process.env.PORT;
 // Add middleware
+app.use(helmet())
+app.use(morgan('tiny'));
 app.use(express.json());
 app.use(passport.initialize());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use('/api/movies', passport.authenticate('jwt', {session: false}), moviesRouter)
 app.use('/api/genres', genresRouter);
- /**
-   * @swagger
-   * /api/users:
-   *  get:
-   *   description: get all the users
-   *   responses:
-   *     '200':
-   *       description:all the users returned
-   *  
-   * 
-   * 
-   */
 
-  /**
-   * @swagger
-   * /api/{username}/favourite:
-   *  post:
-   *   summary: add a movie to favourites
-   *   
-   *   requestBody:
-   *    required:true
-   *    content:
-   *      application/json:
-   * 
-   *   responses:
-   *     '200':
-   *       description:Favourite added
-   *  
-   * 
-   * 
-   */
+
 app.use('/api/users', usersRouter);
 app.use('/api/reviews',reviewsRouter)
 app.use(errHandler);

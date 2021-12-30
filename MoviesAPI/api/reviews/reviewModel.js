@@ -15,4 +15,9 @@ import mongoose from 'mongoose';
 
   });
 
+  ReviewSchema.statics.findByUserName = function (username) {
+    return this.find({ Author: username });
+  };
+
+
   export default mongoose.model('Reviews', ReviewSchema);
