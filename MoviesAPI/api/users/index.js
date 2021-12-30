@@ -8,6 +8,19 @@ import { mongo, Mongoose, set, Types } from 'mongoose';
 import validator from 'validator';
 
 // Get all users
+
+ /**
+   * @swagger
+   * /api/users:
+   *  get:
+   *   description: get all the users
+   *   responses:
+   *     '200':
+   *       description:all the users returned
+   *  
+   * 
+   * 
+   */
 router.get('/', async (req, res) => {
     const users = await User.find();
     res.status(200).json(users);
@@ -99,6 +112,18 @@ router.post('/:userName/favourites', asyncHandler(async (req, res) => {
   }));
 
   //Delete
+
+  //
+  /**
+   * @swagger
+   * / api/users:
+   * get:
+   *  description: delete a favourited movie
+   *  response:
+   *  '200':
+   *    description: deleted sucessfully
+   * 
+   */
   router.delete('/:userName/favourites/:id', asyncHandler(async (req, res) => {
     
     const userName = req.params.userName;
