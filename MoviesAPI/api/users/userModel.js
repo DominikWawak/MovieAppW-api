@@ -8,6 +8,7 @@ const Schema = mongoose.Schema;
   const UserSchema = new Schema({
     username: { type: String, unique: true, required: true},
     password: {type: String, required: true },
+    authToken: {type: String},
     favourites: [{type: mongoose.Schema.Types.ObjectId, ref: 'Movies'}],
     watchlist: [{type: mongoose.Schema.Types.ObjectId, ref: 'Movies'}],
     friends:[{type: mongoose.Schema.Types.ObjectId, ref: 'User'}]

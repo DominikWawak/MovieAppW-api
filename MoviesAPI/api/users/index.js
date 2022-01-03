@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { request, response } from 'express';
 import User from './userModel';
 import asyncHandler from 'express-async-handler';
 const router = express.Router(); // eslint-disable-line
@@ -7,7 +7,13 @@ import movieModel from '../movies/movieModel';
 import { mongo, Mongoose, set, Types } from 'mongoose';
 import validator from 'validator';
 import morgan from 'morgan';
+import Speakeasy from 'speakeasy'
+import dotenv from 'dotenv'
 
+dotenv.config();
+
+let jwtOptions = {};
+jwtOptions.secretOrKey = process.env.SECRET;
 /**
  * @swagger 
  * definitions:
@@ -108,10 +114,26 @@ router.post('/',asyncHandler( async (req, res, next) => {
       }
   }));
 
-router.put('/:id', async (req, res) => {
-    if (req.body._id) delete req.body._id;
+  router.put('/passwordReset/:username',asyncHandler( async (req, res, next) => {
+    if ( !req.body.password) {
+      res.status(401).json({success: false, msg: 'Please pass username and password.'});
+    }
+    
+        if((/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{5,}$/.test(req.body.password)) ){
+            await User.updateOne({
+              username:req.params.username.replace,
+            }, req.body)}
+        else{
+            res.status(401).json({code: 401,msg: 'Password is too weak'});
+        }
+      res.status(201).json({code: 201, msg: 'Password reset'});
+  
+  }));
+  //update user
+router.put('/:username', async (req, res) => {
+    //if (req.body.username) delete req.body.username;
     const result = await User.updateOne({
-        _id: req.params.id,
+        username: req.params.username,
     }, req.body);
     if (result.matchedCount) {
         res.status(200).json({ code:200, msg: 'User Updated Sucessfully' });
@@ -136,7 +158,45 @@ router.post('/:userName/favourites', asyncHandler(async (req, res) => {
     res.status(201).json(user); 
   }));
 
+  // get user by username
+  router.get('/:userName', asyncHandler(async (req, res) => {
+   
+    const userName = req.params.userName;
+ 
+    const user = await User.findByUserName(userName);
 
+    await user.save(); 
+    res.status(201).json(user); 
+  }));
+
+
+  router.post("/totp-secret",(request,response,next) =>{
+    var secret = Speakeasy.generateSecret({length:20});
+    response.send({"secret":secret.base32})
+  })
+
+  router.post("/totp-generate",(request,response,next) =>{
+    response.send({
+      "token":Speakeasy.totp({
+        secret: request.body.secret,
+        encoding: "base32"
+      }),
+      "remaining":(30 - Math.floor((new Date().getTime()/1000.0 %30)))
+    })
+  })
+
+  router.post("/totp-validate",(request,response,next) =>{
+    response.send({
+      "valid": Speakeasy.totp.verify({
+        secret:request.body.secret,
+        encoding:"base32",
+        token:request.body.token,
+        window:0
+      })
+    })
+  })
+
+  
   /**
    * @swagger
    * /api/{username}/favourite:
@@ -237,6 +297,45 @@ router.post('/:userName/favourites', asyncHandler(async (req, res) => {
     const user = await User.findByUserName(userName).populate('friends');
     res.status(201).json(user.friends);
   }));
+
+
+  // Reset Password 
+
+  router.post('/forgot-password', asyncHandler( async (req, res) => {
+    const email = req.body.email;
+    const user = await User.findByUserName(email);
+    const secret=jwt.secret+user.password
+    const payload={
+      email:email,
+      id:user._id
+
+    }
+
+    const token = jwt.sign(payload,secret,{expiresIn:'15m'})
+    //const link = `http://localhost:3000/api/users/reset-password/${user._id}/${token}`
+ 
+    res.status(201).json(token);
+  }));
+
+
+  router.get('/reset-password/:username/:token', asyncHandler( async (req, res) => {
+ //user id
+    const{username,token} = req.params;
+  const user = await User.findByUserName(username);
+  const secret = jwt.secret+user.password
+  try {
+    const payload = jwt.verify(token,secret)
+    res.status(201).json({email:user.username});
+  } catch (error) {
+    res.status(404).json(error.message);
+  }
+  res.status(201).json(req.params);
+  }));
+
+
+
+
+
 
 
 export default router;

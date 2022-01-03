@@ -4,18 +4,44 @@ import uniqid from 'uniqid';
 import movieModel from './movieModel';
 import asyncHandler from 'express-async-handler';
 import {
-    getUpcomingMovies
+    getUpcomingMovies,getNewMovies
   } from '../tmdb-api';
 
 const router = express.Router(); 
 
+// Changed to get the movies and save in mongo 
+router.get('/tmdb/newMovies/:noPages', asyncHandler( async(req, res) => {
+    const numPages = parseInt(req.params.noPages);
+    const oldMovies = await movieModel.find()
+    var allNewMovies=[]
+    for (let i = 1; i < numPages+1; i++) {
+        const newMovies = await getNewMovies();
+        
+        allNewMovies.push.apply(allNewMovies,newMovies.results)
+      }
 
-router.get('/tmdb/upcoming', asyncHandler( async(req, res) => {
-    const upcomingMovies = await getUpcomingMovies();
+    // allNewMovies.forEach(movie => {
+    // if(!(oldMovies.includes(movie))){
+    //         movieModel.push(movie)
+    //     }
+    // })
+
+    
+
+    await movieModel.insertMany(allNewMovies)
+    
+    res.status(200).json(allNewMovies);
+  }));
+
+router.get('/tmdb/upcoming/:numPage', asyncHandler( async(req, res) => {
+    const numPages = parseInt(req.params.numPage);
+    const upcomingMovies = await getUpcomingMovies(numPages);
     res.status(200).json(upcomingMovies);
   }));
+
+
 router.get('/', asyncHandler(async (req, res) => {
-    let { page = 1, limit = 10 } = req.query; // destructure page and limit and set default values
+    let { page = 1, limit = 30} = req.query; // destructure page and limit and set default values
     [page, limit] = [+page, +limit]; //trick to convert to numeric (req.query will contain string values)
 
     const totalDocumentsPromise = movieModel.estimatedDocumentCount(); //Kick off async calls

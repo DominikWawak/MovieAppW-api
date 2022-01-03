@@ -2,24 +2,26 @@ import { formatMs } from '@material-ui/core'
 import React ,{useRef ,useState,useContext}from 'react'
 import {Form,Button,Card, FormLabel, FormControl, Alert} from 'react-bootstrap'
 import { Redirect } from "react-router-dom";
-import { getUser } from '../../api/movie-api';
+import { getUser,verifyPasswordReset } from '../../api/movie-api';
 
 import { AuthContext} from '../../contexts/AuthContext'
 //USE HISTORY ADDED
 import { Link, useHistory} from 'react-router-dom'
 
-export default function SignUpForm() {
+export default function PasswordForm(props) {
     const context = useContext(AuthContext)
-    const emailRef = useRef()
+    
     const passwordRef = useRef()
     const passwordConfirmationlRef = useRef()
     //const currentUser=useAuth()
-    const [registered, setRegistered] = useState(false);
+    
     const [error,setError] = useState("")
     const [loading,setLoading] = useState(false)
     const history = useHistory()
 
-
+    const email = props.location.state.email;
+    const token= props.location.state.token;
+    console.log(email)
 
     async function handleSubmit(e){
         // Prevent form from refresing 
@@ -32,29 +34,25 @@ export default function SignUpForm() {
         try{
             setError("")
             setLoading(true)
-            const r = context.register(emailRef.current.value, passwordRef.current.value);
-            if(r){
-            console.log(r)
-            }
-            const secret = await getUser(emailRef.current.value)
-            setError("Please check your email to complete authentiation", secret.authToken)
-            setRegistered(true);
+            const validEmail = await verifyPasswordReset(email,token)
+            
+           
         //   }
         } catch{
             console.log(e)
-            setError('Failed to create account ')
+            setError('Failed to reset password ')
         
         }
         setLoading(false)
     }
 
-    if (context.userName != "") {
-        return <Redirect to="./Dashboard" />;
-      }
+    // if (context.userName != "") {
+    //     return <Redirect to="./Dashboard" />;
+    //   }
 
-    if (registered === true) {
-        //return <Redirect to="./login" />;
-      }
+    // if (registered === true) {
+    //     //return <Redirect to="./login" />;
+    //   }
     
 
 
@@ -63,14 +61,11 @@ export default function SignUpForm() {
         <>
         <Card>
             <Card.Body>
-                <h2 className="text-center mb-4">SIGN UP</h2>
+                <h2 className="text-center mb-4">Reset Password</h2>
                 {/* <h4>Currently logged in as {currentUser?.email}</h4> */}
                 {error && <Alert variant='danger'>{error}</Alert>}
                 <Form onSubmit={handleSubmit}>
-                    <Form.Group id ="email">
-                        <FormLabel>Email</FormLabel>
-                        <FormControl type ="email" ref= {emailRef} required/>
-                    </Form.Group>
+                    
                     <Form.Group id ="password">
                         <FormLabel>Password</FormLabel>
                         <FormControl type ="password" ref= {passwordRef} required/>
@@ -80,10 +75,10 @@ export default function SignUpForm() {
                         <FormControl type ="password" ref= {passwordConfirmationlRef} required/>
                     </Form.Group>
                     <br/>
-                    <Button disabled= {loading} className="w-100" type ="submit">SignUP</Button>
+                    <Button disabled= {loading} className="w-100" type ="submit">Reset Password</Button>
                 </Form>
                 <div className="w-100 text-center mt-2">
-            Already have account? <Link to="/logIn">Log In</Link>
+            go back? <Link to="/logIn">Log In</Link>
         </div>
             </Card.Body>
         </Card>

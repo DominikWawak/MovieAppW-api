@@ -17,7 +17,8 @@ import Dashboard from "./pages/Dashboard"
 import Feeling from "./pages/feelingPage";
 import PrivateRoute from "./components/privateRoute"
 import ForgotPassword from "./components/forgotPassword";
-import UpdateProfile from "./components/updateProfile.js";
+import PasswordForm from "./components/forgotPasswordForm";
+import UpdateProfile from "./components/updateProfile.js/index.js";
 import AddMovieReviewPage from './pages/addMovieReviewPage.js'
 import AuthProvider from "./contexts/AuthContext";
 
@@ -52,6 +53,7 @@ const App = () => {
         <Route exact path="/logIn" component={logIn} />
         <Route exact path="/feelinglucky" component={Feeling} />
         <Route path="/forgotPassword" component={ForgotPassword} />
+        <Route path="/forgotPasswordForm" component={PasswordForm} />
         <PrivateRoute exact path="/Dashboard" component={Dashboard} />
         <PrivateRoute exact path="/updateProfile" component={UpdateProfile}/>
         <PrivateRoute exact path="/reviews/form" component={AddMovieReviewPage} />

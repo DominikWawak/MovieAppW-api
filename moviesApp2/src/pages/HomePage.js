@@ -19,7 +19,7 @@ const HomePage = (props) => {
   
   //console.log("PLEASE WORK",props.pagenum)
   const [currentPage,setCurrentPage] = useState(1); 
-  const [moviespp, setMoviespp] = React.useState(4);
+  const [moviespp, setMoviespp] = React.useState(20);
   // try no chaching
  // const [movies, setMovies] = useState([]);
   const [trendingMovies,setTrendingMovies] = useState([]);

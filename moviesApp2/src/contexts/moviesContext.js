@@ -1,6 +1,6 @@
 import React, { useState ,useEffect,useContext} from "react";
 //import  { getFirestore, deleteDoc,collection,query, where, getDocs,limit,orderBy,doc,setDoc } from "firebase/firestore"
-import { AuthContext} from '../contexts/AuthContext'
+import { AuthContext} from './AuthContext'
 import { getFavourites,addFavourite, deleteFavourite ,getWatchList,addToWatchlist} from "../api/movie-api";
 
 

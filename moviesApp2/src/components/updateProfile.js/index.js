@@ -1,15 +1,16 @@
 import { formatMs } from '@material-ui/core'
-import React ,{useRef ,useState}from 'react'
+import React ,{useRef ,useState,useContext}from 'react'
 import {Form,Button,Card, FormLabel, FormControl, Alert} from 'react-bootstrap'
-import { useAuth } from '../../contexts/AuthContext'
+import { AuthContext } from '../../contexts/AuthContext'
 //USE HISTORY ADDED
 import { Link, useHistory} from 'react-router-dom'
-import firebase from 'firebase/compat'
+
+//import firebase from 'firebase/compat'
 
 export default function UpdateProfile() {
 
     const emailRef = useRef()
-    
+    const context  = useContext(AuthContext)
     const [error,setError] = useState("")
     const [loading,setLoading] = useState(false)
     const history = useHistory()
@@ -28,7 +29,8 @@ export default function UpdateProfile() {
             setError("")
             setLoading(true)
         // await signUp(emailRef.current.value,passwordRef.current.value)
-          firebase.auth().currentUser.updateEmail(emailRef.current.value)
+         // firebase.auth().currentUser.updateEmail(emailRef.current.value)
+         await context.updateEmail(context.userName,emailRef.current.value)
          history.push("/")
         } catch{
             setError('Failed to update Account ')
@@ -49,7 +51,7 @@ export default function UpdateProfile() {
                 <Form onSubmit={handleSubmit}>
                     <Form.Group id ="email">
                         <FormLabel>Email</FormLabel>
-                        <FormControl type ="email" ref= {emailRef} required defaultValue ={firebase.auth().currentUser.email}/>
+                        <FormControl type ="email" ref= {emailRef} required defaultValue ={context.userName}/>
                     </Form.Group>
                     {/* <Form.Group id ="password">
                         <FormLabel>Password</FormLabel>

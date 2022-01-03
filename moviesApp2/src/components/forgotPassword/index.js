@@ -1,11 +1,12 @@
 import { formatMs } from '@material-ui/core'
 import React ,{useRef ,useState}from 'react'
 import {Form,Button,Card, FormLabel, FormControl, Alert} from 'react-bootstrap'
-import { useAuth } from '../../contexts/AuthContext'
+//import { useAuth } from '../../contexts/AuthContext'
 
 import {Link, useHistory} from "react-router-dom";
-import firebase from 'firebase/compat';
-
+import { forgotPassword } from '../../api/movie-api';
+//import firebase from 'firebase/compat';
+import { Redirect } from "react-router-dom";
 
 export default function ForgotPassword() {
 
@@ -14,6 +15,8 @@ export default function ForgotPassword() {
     const [error,setError] = useState("")
     const [message,setMessage] = useState("")
     const [loading,setLoading] = useState(false)
+    const [validEmail,setValidEmail]=useState(false)
+    const [resetToken,setResetToken] = useState("")
     //const {resetPassword} = useAuth()
 
     const history = useHistory()
@@ -29,8 +32,11 @@ export default function ForgotPassword() {
             setMessage("")
             setError("")
             setLoading(true)
-        await firebase.auth().sendPasswordResetEmail(emailRef.current.value)
+        //await firebase.auth().sendPasswordResetEmail(emailRef.current.value)
+        const token = await forgotPassword(emailRef.current.value)
+        setResetToken(token)
         setMessage("check your inbox for further instructions")
+       setValidEmail(true)
         } catch{
           setError('Failed to reset Password')
         
@@ -38,7 +44,12 @@ export default function ForgotPassword() {
         setLoading(false)
     }
 
-
+if(validEmail){
+    return <Redirect to={{
+        pathname: "./forgotPasswordForm",
+        state: { email:emailRef.current.value,token:resetToken}
+      }} />;
+}
 
     return (
         <>

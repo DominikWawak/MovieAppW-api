@@ -13,6 +13,7 @@ import passport from './authenticate';
 
 
 
+
 const errHandler = (err, req, res, next) => {
   /* if the error in development then send stack trace to display whole error,
   if it's in production then just send error message  */
@@ -28,6 +29,7 @@ const app = express();
 const morgan = require('morgan')
 const swaggerUi  = require('swagger-ui-express')
 const swaggerJSDoc=require('swagger-jsdoc')
+const Speakeasy = require("speakeasy");
 
 
 morgan((tokens, req, res) => {

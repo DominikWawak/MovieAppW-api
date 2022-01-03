@@ -84,6 +84,9 @@ function MovieListPageTemplate({ movies, title, action , paginator}) {
       }
     
     }
+    else if(type=='moviespp'){
+      
+    }
    
     else setGenreFilter(value);
   };
