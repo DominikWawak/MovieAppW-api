@@ -9,6 +9,7 @@ import validator from 'validator';
 import morgan from 'morgan';
 import Speakeasy from 'speakeasy'
 import dotenv from 'dotenv'
+import { use } from 'passport';
 
 dotenv.config();
 
@@ -72,21 +73,38 @@ router.get('/', async (req, res) => {
 // Register OR authenticate a user
 
 /**
- * @swagger
- * /api/users/?action=register:
- *  post:
- *   summary: add/register a users
- *   description: create or log in
- *   requestBody:
- *    content:
- *     application/json:
- *      schema:
- *       $ref: '#/definitions'
- *   responses:
- *    200:
- *     description: created sucessfully
- *    
- */
+   * @swagger
+   * /api/users?action=register:
+   *   post:
+   *    consumes:
+   *      - application/json
+   *    parameters: 
+   *      - in: body
+   *        name: username
+   *        type: string
+   *        description: Registering
+   *        schema:
+   *          type: string
+   *          required: 
+   *            - username
+   *          properties:
+   *            username:
+   *              type: string
+   *              default: user123
+   *            password:
+   *              type: string
+   *              default: password123
+   *              minimum: 5
+   *    responses:
+   *      '201':
+   *         description: 'Created'
+   *
+   *
+   *
+   *
+   * 
+   * 
+   */
 router.post('/',asyncHandler( async (req, res, next) => {
     if (!req.body.username || !req.body.password) {
       res.status(401).json({success: false, msg: 'Please pass username and password.'});
@@ -118,15 +136,23 @@ router.post('/',asyncHandler( async (req, res, next) => {
     if ( !req.body.password) {
       res.status(401).json({success: false, msg: 'Please pass username and password.'});
     }
-    
+    var password = ""
+    const user =await  User.findByUserName(req.params.username)
+        
         if((/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{5,}$/.test(req.body.password)) ){
+        
+        await user.updateOne(req.body)
             await User.updateOne({
-              username:req.params.username.replace,
-            }, req.body)}
+              username:req.params.username,
+            }, req.body)
+            
+            res.status(201).json({code: 201, msg: 'Password reset'});
+          }
+            
         else{
             res.status(401).json({code: 401,msg: 'Password is too weak'});
         }
-      res.status(201).json({code: 201, msg: 'Password reset'});
+     
   
   }));
   //update user
@@ -197,21 +223,22 @@ router.post('/:userName/favourites', asyncHandler(async (req, res) => {
   })
 
   
-  /**
+ /**
    * @swagger
-   * /api/{username}/favourite:
-   *  post:
-   *   summary: add a movie to favourites
-   *   
-   *   requestBody:
-   *    required: true
-   *    content:
-   *      application/json:
-   * 
-   *   responses:
-   *     '200':
-   *       description: Favourite added
-   *  
+   * /api/users/{username}/favourites:
+   *   get:
+   *    consumes:
+   *      - application/json
+   *    parameters: 
+   *      - in: path
+   *        name: username
+   *        type: string
+   *        default: k123@gmail.com
+   *        description: getting all the favourites from a user
+   *    responses:
+   *      '201':
+   *        description: Returning all movies that the user likes
+   *
    * 
    * 
    */
@@ -223,17 +250,34 @@ router.post('/:userName/favourites', asyncHandler(async (req, res) => {
 
   //Delete
 
-  //
-  /**
+ /**
    * @swagger
-   * /{userName}/favourites/{id}:
-   *  delete:
-   *   description: delete a favourited movie
-   *   response:
-   *   '200':
-   *     description: deleted sucessfully
-   * 
+   * /api/users/{userName}/favourites:
+   *   delete:
+   *    consumes:
+   *      - application/json
+   *    parameters: 
+   *      - in: path
+   *        name: userName
+   *        default: k123@gmail.com
+   *      - in: body
+   *        name: id
+   *        type: string
+   *        description: Deleting from Favourites
+   *        schema:
+   *          type: string
+   *          required: 
+   *            - id
+   *          properties:
+   *            id:
+   *              type: string
+   *              default: 568124
+   *    responses:
+   *      '201':
+   *         description: 'Favourite has been deleted'  
+  
    */
+
   router.delete('/:userName/favourites/:id', asyncHandler(async (req, res) => {
     
     const userName = req.params.userName;
@@ -320,7 +364,7 @@ router.post('/:userName/favourites', asyncHandler(async (req, res) => {
 
   router.get('/reset-password/:username/:token', asyncHandler( async (req, res) => {
  //user id
-    const{username,token} = req.params;
+  const{username,token} = req.params;
   const user = await User.findByUserName(username);
   const secret = jwt.secret+user.password
   try {
@@ -329,7 +373,7 @@ router.post('/:userName/favourites', asyncHandler(async (req, res) => {
   } catch (error) {
     res.status(404).json(error.message);
   }
-  res.status(201).json(req.params);
+  
   }));
 
 

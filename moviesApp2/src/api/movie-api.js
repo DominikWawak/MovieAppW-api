@@ -176,6 +176,17 @@ export const getUsers = () => {
     }).then(res => res.json())
 };
 
+export const updateUserPassword = (username,password) => {
+    return fetch(`/api/users/passwordReset/${username}`, {
+        headers: {
+            'Content-Type': 'application/json',
+            
+        },
+        method: 'put',
+        body: JSON.stringify({ password:password})
+    }).then(res => res.json())
+};
+
 export const generateToken = () => {
     return fetch(`/api/users/totp-secret`, {
         headers: {

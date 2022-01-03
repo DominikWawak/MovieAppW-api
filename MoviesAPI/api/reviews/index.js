@@ -7,7 +7,47 @@ import asyncHandler from 'express-async-handler';
 
 const router = express.Router(); 
 
+/**
+ * @swagger 
+ * definitions:
+ *  review:
+ *   type: object
+ *   properties:
+ *    MovieId:
+ *     type: Number
+ *     description: movie id from tmdb
+ *     example: '671583'
+ *    Author:
+ *     type: string
+ *     description: username of the user that created the review
+ *     example: 'k123@gmail.com'
+ *    content:
+ *     type: string
+ *     description: the review content
+ *     example: 'Very good review'
+ *    rating:
+ *     type: string
+ *     description: review on a scale from good to bad
+ *     example: 'Average'
+ *    likes:
+ *     type: string
+ *     description: number of users that like this review
+ *     example: '8'
+ */
 
+
+ /**
+   * @swagger
+   * /api/reviews:
+   *  get:
+   *   description: get all the reviews
+   *   responses:
+   *     '200':
+   *       description: all the reviews returned
+   *  
+   * 
+   * 
+   */
 
 // Get movie reviews
 router.get('/', async (req, res) => {
@@ -27,6 +67,27 @@ router.get('/', async (req, res) => {
 });
 
 // get reviews for a user
+
+ /**
+   * @swagger
+   * /api/reviews/{username}:
+   *  get:
+   *   consumes:
+   *     - application/json
+   *   parameters: 
+   *      - in: path
+   *        name: username
+   *        type: string
+   *        default: k123@gmail.com
+   *        description: getting all the reviews from a user
+   *   description: get all the reviews
+   *   responses:
+   *     '200':
+   *       description: all the reviews returned
+   *  
+   * 
+   * 
+   */
 router.get('/:username', async (req, res) => {
     const username= req.params.username;
     const reviews = await Review.findByUserName(username)
@@ -49,6 +110,44 @@ router.get('/:username', async (req, res) => {
 });
 
 //Post a movie review
+/**
+   * @swagger
+   * /api/reviews:
+   *   post:
+   *    consumes:
+   *      - application/json
+   *    parameters: 
+   *      - in: body
+   *        name: username
+   *        type: string
+   *        description: username
+   *        schema:
+   *          type: string
+   *          required: 
+   *            - Author
+   *            - content
+   *            - rating
+   *            - movieId
+   *          properties:
+   *            Author:
+   *              type: string
+   *              default: k123@gmail.com
+   *            content:
+   *              type: string
+   *              default: I really liked that movie it was fantastic   
+   *            rating:
+   *              type: string
+   *              default: Very Good
+   *            rating:
+   *              type: Number
+   *              default: 568124
+   *              
+   *    responses:
+   *      '201':
+   *         description: 'Created'
+   *
+ 
+   */
 router.post('/', asyncHandler( async(req, res) => {
     // const id = parseInt(req.params.id);
 

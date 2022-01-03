@@ -1,7 +1,7 @@
 
 import React,{useState,useContext,useEffect} from 'react'
 import { Card,Button,Alert,Form } from 'react-bootstrap'
-import { getReviews,updateReview,getFriends , getReviewOfUser} from '../api/movie-api'
+import { getReviews,updateReview,getFriends , getReviewOfUser,getFavourites,getMovies} from '../api/movie-api'
 import {AuthContext} from '../contexts/AuthContext'
 import { AddCircle } from '@material-ui/icons';
 import { List } from '@material-ui/core';
@@ -26,6 +26,7 @@ import { Modal } from '@material-ui/core';
 import { Typography } from '@material-ui/core';
 import BasicModal from '../components/popUp';
 import UserStats from '../components/userStatsPop';
+import { CardContent,CardMedia,CardActionArea } from '@material-ui/core';
 
 
 
@@ -39,7 +40,7 @@ export default  function Dashboard() {
   const [likes,setLikes]=useState(0)
   const [friendSearchResults,setFriendSearchResults]= useState([])
   const [friendSearchString,setFriendSearchString] = useState("")
-
+  const [recommendedMovie,setRecommendedMovie] = useState({})
   
     const [error,setError]=useState("")
 
@@ -57,10 +58,64 @@ export default  function Dashboard() {
     const history= useHistory()
 
 
+    // Recomended algorithim 
+    
+    async function getAllFavouriteGenres(){
+    const favs = await getFavourites(currentUser)
+    let genres= []
+   
+      favs.forEach(movie => {
+        
+        genres=[...genres,...movie.genre_ids]
+       
+      });
+    
+    return( mode(genres))
+    }
+
+
+    async function getRecommendedMovie(freqGenre){
+      const movies = await getMovies(1,20)
+      console.log("MOVIES",movies)
+     const simmilarMovies = movies.results.filter((movie) => {
+        
+       return movie.genre_ids.includes(freqGenre)
+      })
+      setRecommendedMovie(simmilarMovies[0])
+      console.log("Recommended",simmilarMovies)
+      return simmilarMovies[0]
+    }
+
+    // From stackOverflow - didn't have time to implement my own
+    function mode(array)
+{
+    if(array.length == 0)
+        return null;
+    var modeMap = {};
+    var maxEl = array[0], maxCount = 1;
+    for(var i = 0; i < array.length; i++)
+    {
+        var el = array[i];
+        if(modeMap[el] == null)
+            modeMap[el] = 1;
+        else
+            modeMap[el]++;  
+        if(modeMap[el] > maxCount)
+        {
+            maxEl = el;
+            maxCount = modeMap[el];
+        }
+    }
+    return maxEl;
+}
+    
+
     
        
 
         useEffect(() => {
+          
+          getRecommendedMovie(getAllFavouriteGenres)
             const getRevs = async() =>{
                 // const data = await getDocs(reviewRef)
                 // console.log(data)
@@ -91,7 +146,7 @@ export default  function Dashboard() {
             getRevs()
             getFrnds()
             
-        }, [currentUser,likes])
+        }, [currentUser,likes,recommendedMovie])
 
         console.log("reviews2",reviews)
  
@@ -151,7 +206,24 @@ export default  function Dashboard() {
                 <strong>Email:</strong>  {currentUser}
                 <div>
                 <strong>Followers: </strong>{friends.length}    
-                
+                {/* <Card sx={{ maxWidth: 345 }}>
+      <CardActionArea>
+        <CardMedia
+          component="img"
+          height="140"
+          image={"https://image.tmdb.org/t/p/original/"+recommendedMovie.poster_path}
+          alt="movie"
+        />
+        <CardContent>
+          <Typography gutterBottom variant="h5" component="div">
+            {"Recommended movie " + recommendedMovie.title}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            
+          </Typography>
+        </CardContent>
+      </CardActionArea>
+    </Card> */}
                 <BasicModal></BasicModal>
     
                 </div>

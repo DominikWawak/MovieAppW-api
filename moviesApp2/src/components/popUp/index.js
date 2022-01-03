@@ -39,15 +39,17 @@ export default function BasicModal() {
 
  const getUsersFn = async ()=>{
     const us = await getUsers();
+    console.log("allusers",us)
     const currentUser = await context.userName
    const friends = await getFriends(currentUser)
    const noCurrentUser = us.filter((user) =>(
     user.username != context.userName
   ))
 
-  const notFollowed = noCurrentUser.filter(u=>!noCurrentUser.includes(u))
-    setUsers(notFollowed)
-    console.log(notFollowed)
+  console.log("no curerent",noCurrentUser)
+  const notFollowed = await noCurrentUser.filter((u)=>(noCurrentUser.includes(u)))
+  setUsers(notFollowed)
+  console.log("not followed",notFollowed)
  }
 
  useEffect(() => {

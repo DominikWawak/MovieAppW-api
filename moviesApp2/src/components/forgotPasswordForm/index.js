@@ -2,8 +2,8 @@ import { formatMs } from '@material-ui/core'
 import React ,{useRef ,useState,useContext}from 'react'
 import {Form,Button,Card, FormLabel, FormControl, Alert} from 'react-bootstrap'
 import { Redirect } from "react-router-dom";
-import { getUser,verifyPasswordReset } from '../../api/movie-api';
-
+import { getUser,verifyPasswordReset,updateUserPassword } from '../../api/movie-api';
+import bcrypt from 'bcrypt-nodejs';
 import { AuthContext} from '../../contexts/AuthContext'
 //USE HISTORY ADDED
 import { Link, useHistory} from 'react-router-dom'
@@ -17,6 +17,8 @@ export default function PasswordForm(props) {
     
     const [error,setError] = useState("")
     const [loading,setLoading] = useState(false)
+    const [passwordReset,setPasswordReset] = useState(false)
+    const [password,setPassword] = useState("")
     const history = useHistory()
 
     const email = props.location.state.email;
@@ -35,6 +37,17 @@ export default function PasswordForm(props) {
             setError("")
             setLoading(true)
             const validEmail = await verifyPasswordReset(email,token)
+            bcrypt.genSalt (10,  (err, salt)=>  {
+                
+                bcrypt.hash(passwordRef.current.value, salt, null, (err, hash)=> {
+                    
+                    const result=  updateUserPassword(validEmail.email,hash)
+                    setPasswordReset(true)
+                });
+            });
+           
+            
+           
             
            
         //   }
@@ -50,9 +63,9 @@ export default function PasswordForm(props) {
     //     return <Redirect to="./Dashboard" />;
     //   }
 
-    // if (registered === true) {
-    //     //return <Redirect to="./login" />;
-    //   }
+    if (passwordReset === true) {
+        return <Redirect to="./login" />;
+      }
     
 
 

@@ -37,7 +37,8 @@ export default function SignUpForm() {
             console.log(r)
             }
             const secret = await getUser(emailRef.current.value)
-            setError("Please check your email to complete authentiation", secret.authToken)
+            
+            setError("Please check your email to complete authentiation " + secret.authToken)
             setRegistered(true);
         //   }
         } catch{

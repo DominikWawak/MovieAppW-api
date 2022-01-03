@@ -9,6 +9,7 @@ This app uses my own api design based of the web app development labs and adds t
 
  + Feature 1 - modified the user schema to also have the watchlist and friends arrays as reflected on in assignment 1.
  + Feature 2 - Login/Signup message error handling displaying messages when incorrect email or password is entered to inform the user that the site did not crash. 
++ Feature 3 - two factor authentication with a passcode, reset password with token almost complete.
  + Feature 3 - added a review schema for user reviews to store in mongo.
  + Feature 4 - middleware added such as helmet to hide some headers for security purposes and morgan for logging of the api in the console with custom options.
  + Feature 5 - API documentation with swagger, not fully covers the whole api.

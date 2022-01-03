@@ -8,6 +8,8 @@
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.57",
     "axios": "^0.24.0",
+    "bcrypt": "^5.0.1",
+    "bcrypt-nodejs": "^0.0.3",
     "firebase": "^9.4.1",
     "prop-types": "^15.7.2",
     "react": "^17.0.1",
